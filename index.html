@@ -360,27 +360,30 @@
             <div class="row">
                 <div class="col-md-6 offset-lg-1 wow fadeInLeft mt-5">
                     <div class="contact-form">
-                        <form action="contact.php">
+                        <form id="contactForm">
                             <div class="row">
                                 <div class="col-lg-6">
-                                    <input type="text" placeholder="Nombre">
+                                    <input type="text" id="name" placeholder="Nombre" required>
                                 </div>
                                 <div class="col-lg-6">
-                                    <input type="email" placeholder="Correo">
+                                    <input type="email" id="email" placeholder="Correo" required>
                                 </div>
                                 <div class="col-lg-12">
-                                    <input type="text" placeholder="Asunto">
+                                    <input type="text" id="subject" placeholder="Asunto" required>
                                 </div>
                                 <div class="col-lg-12">
-                                    <textarea placeholder="Mensaje"></textarea>
+                                    <textarea id="message" placeholder="Mensaje" required></textarea>
                                 </div>
                                 <div class="col-lg-12">
-                                    <input type="submit" class="header-btn" value="Enviar Mensaje">
+                                    <input type="submit" id="sendBtn" class="header-btn" value="Enviar Mensaje">
                                 </div>
                             </div>
+                            <div id="formResponse" style="margin-top: 10px;"></div>
                         </form>
                     </div>
                 </div>
+
+
                 <div class="col-lg-4 col-md-6 wow fadeInRight">
                     <div class="contact-form-right">
                         <div class="contact-form-right-single">
@@ -433,6 +436,68 @@
     <script src="assets/js/wow.min.js"></script>
     <!-- main.js -->
     <script src="assets/js/main.js"></script>
+
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            enviarMensaje();
+        });
+
+        function validarEmail(email) {
+            // Expresión regular básica para validar email
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+
+        async function enviarMensaje() {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const subject = document.getElementById('subject').value.trim();
+            const message = document.getElementById('message').value.trim();
+            const responseDiv = document.getElementById('formResponse');
+            const sendBtn = document.getElementById('sendBtn');
+
+            // Validaciones
+            if (!name || !email || !subject || !message) {
+                responseDiv.innerHTML = '<div class="alert alert-warning">Por favor completa todos los campos.</div>';
+                return;
+            }
+
+            if (!validarEmail(email)) {
+                responseDiv.innerHTML = '<div class="alert alert-warning">El correo no es válido.</div>';
+                return;
+            }
+
+            // Desactivar botón y mostrar "Enviando..."
+            sendBtn.disabled = true;
+            const originalText = sendBtn.value;
+            sendBtn.value = 'Enviando...';
+
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('email', email);
+            formData.append('subject', subject);
+            formData.append('message', message);
+
+            try {
+                const response = await fetch('./lib/contact.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.text();
+                responseDiv.innerHTML = `<div class="alert alert-success">${result}</div>`;
+                document.getElementById('contactForm').reset();
+            } catch (error) {
+                responseDiv.innerHTML = `<div class="alert alert-danger">Error al enviar el mensaje. Intenta más tarde.</div>`;
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.value = originalText;
+            }
+        }
+    </script>
+
+
 </body>
 
 </html>
