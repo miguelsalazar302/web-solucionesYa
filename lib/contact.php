@@ -11,18 +11,18 @@
         $mail = new PHPMailer;
         $mail->isSMTP();  
 
-        $mail->Host = "laorejita.net";
+        $mail->Host = "dominio.net";
         $mail->SMTPAuth = true;                      
-        $mail->Username = "pedidos@laorejita.net";             
-        $mail->Password = "4@uR$3rR";                       
+        $mail->Username = "correo@dominio.net";             
+        $mail->Password = "clave_mail";                       
         $mail->SMTPSecure = "ssl";                       
         $mail->Port = 465;      
 
         //Correo quien envía
-        $mail->SetFrom('pedidos@laorejita.net', 'La Orejita');
+        $mail->SetFrom('correo@dominio.net', 'Soluciones Ya');
 
         //Correo de destino
-        $mail->addAddress('pedidoslaorejita@gmail.com', 'La Orejita');
+        $mail->addAddress('correodominio@gmail.com', 'Soluciones Ya');
         $mail->WordWrap = 50;
         $mail->IsHTML(true);
 
